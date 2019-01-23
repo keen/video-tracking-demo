@@ -1,0 +1,89 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
+  <script src="https://player.vimeo.com/api/player.js"></script>
+</head>
+<body>
+  <iframe id="vimeo-player"
+          src="https://player.vimeo.com/video/76979871"
+          frameborder="0" height="360" width="640"
+          webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+  <script>
+  /*
+    Learn more about the Vimeo Player API here:
+    https://github.com/vimeo/player.js
+
+    Learn more about keen-tracking.js here:
+    https://github.com/keen/keen-tracking.js
+  */
+
+  var iframe = document.querySelector('#vimeo-player');
+  var player = new Vimeo.Player(iframe);
+  trackEvents(player);
+
+  function trackEvents(player) {
+    var client = new Keen({
+      projectId: '5c48a370c9e77c000121a041',
+      writeKey: 'D9D90CFAD48B9FE1999E36A4ED542F0EE77D9A0DD3BD195B45EC7F2A9C06115CC74D0E2A4C7D97930F6CFC4C9C2029F94C1948A79243FB38F98CE6DC645EBCECF86EC7127D229A33F19233786450508726BA17D68F856598C5855E1694922B6A'
+    });
+    var extend = Keen.utils.extend;
+
+    // These flags can help with local development
+    Keen.debug = true;
+    // Keen.enabled = false;
+    client.on('recordEvent', console.log);
+
+    client.extendEvents(function(){
+      return {
+        browser: Keen.helpers.getBrowserProfile()
+      }
+    });
+
+    player.on('play', function() {
+      getPlayerState(player, function(state){
+        client.recordEvent('video-interaction', extend(state, { event_type: 'started', source: 'vimeo-demo'  }));
+      });
+    });
+
+    player.on('pause', function() {
+      getPlayerState(player, function(state){
+        client.recordEvent('video-interaction', extend(state, { event_type: 'paused', source: 'vimeo-demo'  }));
+      });
+    });
+
+    player.on('ended', function() {
+      getPlayerState(player, function(state){
+        client.recordEvent('video-interaction', extend(state, { event_type: 'finished', source: 'vimeo-demo'  }));
+      });
+    });
+
+    player.on('error', function() {
+      getPlayerState(player, function(state){
+        client.recordEvent('video-interaction', extend(state, { event_type: 'error', source: 'vimeo-demo'  }));
+      });
+    });
+  }
+
+  function getPlayerState(p, cb){
+    p.getVolume().then(function(volume){
+      p.getCurrentTime().then(function(time){
+        p.getDuration().then(function(duration){
+          cb({
+            'is-muted': volume === 0,
+            'current-position': time,
+            'duration': duration,
+            'volume': volume
+          })
+        }).catch(handleStateError);
+      }).catch(handleStateError);
+    }).catch(handleStateError);
+  }
+
+  function handleStateError(err) {
+    console.log(err);
+  }
+  </script>
+</body>
+</html>

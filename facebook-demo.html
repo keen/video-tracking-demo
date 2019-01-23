@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.0.5.js"></script>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
 </head>
 <body>
   <div id="fb-root"></div>
@@ -51,27 +51,27 @@
     })
 
     player.subscribe('startedPlaying', function(e) {
-      client.recordEvent('video-interaction', { event_type: 'started' });
+      client.recordEvent('video-interaction', { event_type: 'started', source: 'facebook-demo' });
     });
 
     player.subscribe('paused', function(e) {
-      client.recordEvent('video-interaction', { event_type: 'paused' });
+      client.recordEvent('video-interaction', { event_type: 'paused', source: 'facebook-demo' });
     });
 
     player.subscribe('finishedPlaying', function(e) {
-      client.recordEvent('video-interaction', { event_type: 'finished' });
+      client.recordEvent('video-interaction', { event_type: 'finished', source: 'facebook-demo' });
     });
 
     player.subscribe('startedBuffering', function(e) {
-      client.recordEvent('video-interaction', { event_type: 'started-buffering' });
+      client.recordEvent('video-interaction', { event_type: 'started-buffering', source: 'facebook-demo' });
     });
 
     player.subscribe('finishedBuffering', function(e) {
-      client.recordEvent('video-interaction', { event_type: 'finished-buffering' });
+      client.recordEvent('video-interaction', { event_type: 'finished-buffering', source: 'facebook-demo' });
     });
 
     player.subscribe('error', function(e) {
-      client.recordEvent('video-interaction', { event_type: 'error' });
+      client.recordEvent('video-interaction', { event_type: 'error', source: 'facebook-demo' });
     });
   }
 

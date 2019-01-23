@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.0.5.js"></script>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
 </head>
 <body>
   <iframe id="youtube-iframe-player"
@@ -32,8 +32,8 @@
 
   function trackEvents(player) {
     var client = new Keen({
-      projectId: 'YOUR_KEEN_PROJECT_ID',
-      writeKey: 'YOUR_KEEN_WRITE_KEY'
+      projectId: '5c48a370c9e77c000121a041',
+      writeKey: 'D9D90CFAD48B9FE1999E36A4ED542F0EE77D9A0DD3BD195B45EC7F2A9C06115CC74D0E2A4C7D97930F6CFC4C9C2029F94C1948A79243FB38F98CE6DC645EBCECF86EC7127D229A33F19233786450508726BA17D68F856598C5855E1694922B6A'
     });
 
     // These flags can help with local development
@@ -57,18 +57,18 @@
     player.addEventListener('onStateChange', function(e) {
       var state = e.data;
       if (state === 1) {
-        client.recordEvent('video-interaction', { event_type: 'started' });
+        client.recordEvent('video-interaction', { event_type: 'started', source: 'youtube-demo' });
       }
       else if (state === 2) {
-        client.recordEvent('video-interaction', { event_type: 'paused' });
+        client.recordEvent('video-interaction', { event_type: 'paused', source: 'youtube-demo' });
       }
       else if (state === 0) {
-        client.recordEvent('video-interaction', { event_type: 'finished' });
+        client.recordEvent('video-interaction', { event_type: 'finished', source: 'youtube-demo' });
       }
     }, false);
 
     player.addEventListener('onError', function(e) {
-      client.recordEvent('video-interaction', { event_type: 'error' });
+      client.recordEvent('video-interaction', { event_type: 'error', source: 'youtube-demo' });
     }, false);
   }
   </script>
