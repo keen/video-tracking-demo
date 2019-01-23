@@ -1,0 +1,74 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.0.5.js"></script>
+
+  <!-- VideoJS Assets -->
+  <link href="http://vjs.zencdn.net/5.8.8/video-js.css" rel="stylesheet">
+  <script src="http://vjs.zencdn.net/5.8.8/video.js"></script>
+</head>
+<body>
+  <!-- VideoJS Player -->
+  <div>
+    <video id="video-player" class="video-js" controls preload="auto" width="640">
+      <source src="http://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      <source src="http://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg">
+      <p class="vjs-no-js">
+        To view this video please enable JavaScript, and consider upgrading to a web browser that
+        <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+      </p>
+    </video>
+  </div>
+  <script>
+  /*
+    Learn more about the VideoJS API here:
+    http://docs.videojs.com/
+
+    Learn more about keen-tracking.js here:
+    https://github.com/keen/keen-tracking.js
+  */
+  var video = videojs('video-player');
+  var client = new Keen({
+    projectId: 'YOUR_KEEN_PROJECT_ID',
+    writeKey: 'YOUR_KEEN_WRITE_KEY'
+  });
+
+  // These flags can help with local development
+  Keen.debug = true;
+  // Keen.enabled = false;
+  client.on('recordEvent', console.log);
+
+  /*
+    Simple VideoJS Plugin
+  */
+  videojs.plugin('recordKeenEvents', function(client){
+    client.extendEvents(function(){
+      return {
+        browser: Keen.helpers.getBrowserProfile(),
+        player: {
+          'is-muted': this.muted(),
+          'current-position': this.currentTime(),
+          'duration': this.duration(),
+          'volume': this.volume()
+        }
+      }
+    }.bind(this));
+
+    this.on('play', function() {
+      client.recordEvent('video-interaction', { event_type: 'started' });
+    });
+    this.on('pause', function() {
+      client.recordEvent('video-interaction', { event_type: 'paused' });
+    });
+    this.on('ended', function() {
+      client.recordEvent('video-interaction', { event_type: 'finished' });
+    });
+    this.on('error', function() {
+      client.recordEvent('video-interaction', { event_type: 'error' });
+    });
+  });
+
+  video.recordKeenEvents(client);
+  </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.0.5.js"></script>
+</head>
+<body>
+  <iframe id="youtube-iframe-player"
+          width="640" height="360"
+          src="https://www.youtube.com/embed/G5UBjF1z9hA?enablejsapi=1"
+          frameborder="0"
+          style="border: solid 4px #37474F"></iframe>
+
+  <script>
+  /*
+    Learn more about the Youtube iFrame Player API here:
+    https://developers.google.com/youtube/iframe_api_reference
+
+    Learn more about keen-tracking.js here:
+    https://github.com/keen/keen-tracking.js
+  */
+
+  // Install YouTube SDK
+  var newTag = document.createElement('script');
+  newTag.src = 'https://www.youtube.com/iframe_api';
+  var firstTag = document.getElementsByTagName('script')[0];
+  firstTag.parentNode.insertBefore(newTag, firstTag);
+
+  function onYouTubeIframeAPIReady() {
+    var player = new YT.Player('youtube-iframe-player');
+    trackEvents(player);
+  }
+
+  function trackEvents(player) {
+    var client = new Keen({
+      projectId: 'YOUR_KEEN_PROJECT_ID',
+      writeKey: 'YOUR_KEEN_WRITE_KEY'
+    });
+
+    // These flags can help with local development
+    Keen.debug = true;
+    // Keen.enabled = false;
+    client.on('recordEvent', console.log);
+
+    client.extendEvents(function(){
+      return {
+        browser: Keen.helpers.getBrowserProfile(),
+        player: {
+          'is-muted': player.isMuted(),
+          'current-position': player.getCurrentTime(),
+          'duration': player.getDuration(),
+          'playback-quality': player.getPlaybackQuality(),
+          'volume': player.getVolume()
+        }
+      }
+    });
+
+    player.addEventListener('onStateChange', function(e) {
+      var state = e.data;
+      if (state === 1) {
+        client.recordEvent('video-interaction', { event_type: 'started' });
+      }
+      else if (state === 2) {
+        client.recordEvent('video-interaction', { event_type: 'paused' });
+      }
+      else if (state === 0) {
+        client.recordEvent('video-interaction', { event_type: 'finished' });
+      }
+    }, false);
+
+    player.addEventListener('onError', function(e) {
+      client.recordEvent('video-interaction', { event_type: 'error' });
+    }, false);
+  }
+  </script>
+</body>
+</html>
