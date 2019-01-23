@@ -26,6 +26,7 @@
     // Optional debug mode
     KeenTracking.debug = true;
     client.on('recordEvent', Keen.log);
+    client.on('recordEvent', console.log);
 
     var helpers = KeenTracking.helpers;
     var utils = KeenTracking.utils;
@@ -36,12 +37,7 @@
     }
 
     // Track a 'pageview' event and initialize auto-tracking data model
-    client.initAutoTracking({
-      recordClicks: false,
-      recordFormSubmits: false,
-      recordPageViews: true,
-      collectIpAddress: false //gdpr
-    });
+   
 
     document.addEventListener('DOMContentLoaded', function () {
       var control = document.getElementById('video-control');
@@ -69,6 +65,13 @@
             'volume': player.volume
           }
         }
+      });
+
+      client.initAutoTracking({
+        recordClicks: false,
+        recordFormSubmits: false,
+        recordPageViews: true,
+        collectIpAddress: false //gdpr
       });
 
       player.addEventListener('play', function () {
