@@ -40,8 +40,8 @@
 
   function trackEvents(player) {
     var client = new Keen({
-      projectId: 'YOUR_KEEN_PROJECT_ID',
-      writeKey: 'YOUR_KEEN_WRITE_KEY'
+      projectId: '5c48a370c9e77c000121a041',
+      writeKey: 'D9D90CFAD48B9FE1999E36A4ED542F0EE77D9A0DD3BD195B45EC7F2A9C06115CC74D0E2A4C7D97930F6CFC4C9C2029F94C1948A79243FB38F98CE6DC645EBCECF86EC7127D229A33F19233786450508726BA17D68F856598C5855E1694922B6A'
     });
 
     // These flags can help with local development
@@ -62,19 +62,19 @@
     })
 
     player.addEventListener('play', function() {
-      client.recordEvent('video-interaction', { event_type: 'started' });
+      client.recordEvent('video-interaction', { event_type: 'started', source: 'html5-demo'});
     }, false);
 
     player.addEventListener('pause', function() {
-      client.recordEvent('video-interaction', { event_type: 'paused' });
+      client.recordEvent('video-interaction', { event_type: 'paused', source: 'html5-demo'});
     }, false);
 
     player.addEventListener('ended', function() {
-      client.recordEvent('video-interaction', { event_type: 'finished' });
+      client.recordEvent('video-interaction', { event_type: 'finished', source: 'html5-demo'});
     }, false);
 
     player.addEventListener('error', function() {
-      client.recordEvent('video-interaction', { event_type: 'error' });
+      client.recordEvent('video-interaction', { event_type: 'error', source: 'html5-demo'});
     }, false);
   }
   </script>
