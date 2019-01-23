@@ -39,7 +39,8 @@
     client.initAutoTracking({
       recordClicks: false,
       recordFormSubmits: false,
-      recordPageViews: true
+      recordPageViews: true,
+      collectIpAddress: false //gdpr
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -60,6 +61,7 @@
       client.extendEvents(function () {
         return {
           browser: Keen.helpers.getBrowserProfile(),
+          guest_id: sessionCookie.get('guest_id'), //basic session tracking that you could extend to a dedicated visitors dict
           player: {
             'is-muted': player.muted,
             'current-position': player.currentTime,
@@ -70,19 +72,19 @@
       });
 
       player.addEventListener('play', function () {
-        client.recordEvent('video-interaction', { event_type: 'started', source: 'videojs-demo' });
+        client.recordEvent('video-interaction', { event_type: 'started', source: 'html5-video-demo' });
       }, false);
 
       player.addEventListener('pause', function () {
-        client.recordEvent('video-interaction', { event_type: 'paused', source: 'videojs-demo' });
+        client.recordEvent('video-interaction', { event_type: 'paused', source: 'html5-video-demo' });
       }, false);
 
       player.addEventListener('ended', function () {
-        client.recordEvent('video-interaction', { event_type: 'finished', source: 'videojs-demo' });
+        client.recordEvent('video-interaction', { event_type: 'finished', source: 'html5-video-demo' });
       }, false);
 
       player.addEventListener('error', function () {
-        client.recordEvent('video-interaction', { event_type: 'error', source: 'videojs-demo' });
+        client.recordEvent('video-interaction', { event_type: 'error', source: 'html5-video-demo' });
       }, false);
     }, false);
   </script>
