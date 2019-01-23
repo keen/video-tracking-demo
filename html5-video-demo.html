@@ -1,10 +1,12 @@
 <html>
+
 <head>
   <meta charset="utf-8">
   <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
 </head>
+
 <body>
-  <!-- HTML5 Video Player -->
+  !-- HTML5 Video Player -->
   <div>
     <button id="video-control">Play</button>
     <br><br>
@@ -14,69 +16,78 @@
       Your browser does not support HTML5 video.
     </video>
   </div>
+
   <script>
-  /*
-    Learn more about the HTML5 AV DOM Reference here:
-    http://www.w3schools.com/tags/ref_av_dom.asp
+    var video = videojs('video-player');
 
-    Learn more about keen-tracking.js here:
-    https://github.com/keen/keen-tracking.js
-  */
-  document.addEventListener('DOMContentLoaded', function() {
-    var control = document.getElementById('video-control');
-    var player = document.getElementById('video-player');
-
-    control.addEventListener('click', function(){
-      if (player.paused) {
-        player.play();
-      }
-      else {
-        player.pause();
-      }
-    }, false);
-
-    trackEvents(player);
-  }, false);
-
-  function trackEvents(player) {
     var client = new Keen({
       projectId: '5c48a370c9e77c000121a041',
       writeKey: 'D9D90CFAD48B9FE1999E36A4ED542F0EE77D9A0DD3BD195B45EC7F2A9C06115CC74D0E2A4C7D97930F6CFC4C9C2029F94C1948A79243FB38F98CE6DC645EBCECF86EC7127D229A33F19233786450508726BA17D68F856598C5855E1694922B6A'
     });
 
-    // These flags can help with local development
-    Keen.debug = true;
-    // Keen.enabled = false;
-    client.on('recordEvent', console.log);
+    // Optional debug mode
+    KeenTracking.debug = true;
+    client.on('recordEvent', Keen.log);
 
-    client.extendEvents(function(){
-      return {
-        browser: Keen.helpers.getBrowserProfile(),
-        player: {
-          'is-muted': player.muted,
-          'current-position': player.currentTime,
-          'duration': player.duration,
-          'volume': player.volume
+    var helpers = KeenTracking.helpers;
+    var utils = KeenTracking.utils;
+
+    var sessionCookie = utils.cookie('keen-video-demo');
+    if (!sessionCookie.get('guest_id')) {
+      sessionCookie.set('guest_id', helpers.getUniqueId());
+    }
+
+    // Track a 'pageview' event and initialize auto-tracking data model
+    client.initAutoTracking({
+      recordClicks: false,
+      recordFormSubmits: false,
+      recordPageViews: true
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var control = document.getElementById('video-control');
+      var player = document.getElementById('video-player');
+
+      // Create a toggle button
+      control.addEventListener('click', function () {
+        if (player.paused) {
+          player.play();
         }
-      }
-    })
+        else {
+          player.pause();
+        }
+      }, false);
 
-    player.addEventListener('play', function() {
-      client.recordEvent('video-interaction', { event_type: 'started', source: 'html5-demo'});
-    }, false);
+      // Additional player-specific properties
+      client.extendEvents(function () {
+        return {
+          browser: Keen.helpers.getBrowserProfile(),
+          player: {
+            'is-muted': player.muted,
+            'current-position': player.currentTime,
+            'duration': player.duration,
+            'volume': player.volume
+          }
+        }
+      });
 
-    player.addEventListener('pause', function() {
-      client.recordEvent('video-interaction', { event_type: 'paused', source: 'html5-demo'});
-    }, false);
+      player.addEventListener('play', function () {
+        client.recordEvent('video-interaction', { event_type: 'started', source: 'videojs-demo' });
+      }, false);
 
-    player.addEventListener('ended', function() {
-      client.recordEvent('video-interaction', { event_type: 'finished', source: 'html5-demo'});
-    }, false);
+      player.addEventListener('pause', function () {
+        client.recordEvent('video-interaction', { event_type: 'paused', source: 'videojs-demo' });
+      }, false);
 
-    player.addEventListener('error', function() {
-      client.recordEvent('video-interaction', { event_type: 'error', source: 'html5-demo'});
+      player.addEventListener('ended', function () {
+        client.recordEvent('video-interaction', { event_type: 'finished', source: 'videojs-demo' });
+      }, false);
+
+      player.addEventListener('error', function () {
+        client.recordEvent('video-interaction', { event_type: 'error', source: 'videojs-demo' });
+      }, false);
     }, false);
-  }
   </script>
 </body>
+
 </html>
